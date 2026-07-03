@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/quizzes")
-class QuizController(val quizService: QuizService) {
+class QuizController(private val quizService: QuizService) {
 
     @GetMapping("/{id}")
     fun getQuiz(@PathVariable id: Int): QuizResponse {
@@ -46,9 +46,9 @@ class QuizController(val quizService: QuizService) {
     }
 
     @PostMapping("/{id}/solve")
-    fun solveQuiz(@PathVariable id: Int, @RequestParam index: Int): SolveQuizResponse  {
+    fun solveQuiz(@PathVariable id: Int, @RequestParam answer: Int): SolveQuizResponse {
         val quiz = quizService.getQuizById(id) ?: throw QuizNotFoundException(id)
-        val correct = quizService.checkAnswer(quiz, index)
+        val correct = quizService.checkAnswer(quiz, answer)
         val feedback = if (correct) QuizMessages.CORRECT_FEEDBACK else QuizMessages.INCORRECT_FEEDBACK
         return SolveQuizResponse(correct, feedback)
     }

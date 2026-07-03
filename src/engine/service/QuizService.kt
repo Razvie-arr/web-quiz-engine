@@ -6,8 +6,8 @@ import engine.util.QuizIdGenerator
 import org.springframework.stereotype.Service
 
 @Service
-class QuizService(val quizRepository: QuizRepository, val idGenerator: QuizIdGenerator) {
-    
+class QuizService(private val quizRepository: QuizRepository, private val idGenerator: QuizIdGenerator) {
+
     fun getQuizById(id: Int): Quiz? {
         return quizRepository.getQuizById(id)
     }
