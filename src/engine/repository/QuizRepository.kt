@@ -1,23 +1,6 @@
 package engine.repository
 
-import engine.domain.Quiz
-import org.springframework.stereotype.Repository
+import engine.entity.QuizEntity
+import org.springframework.data.jpa.repository.JpaRepository
 
-@Repository
-class QuizRepository {
-
-    private val quizzes = mutableListOf<Quiz>()
-
-    fun getQuizById(id: Int): Quiz? {
-        return quizzes.find { it.id == id }
-    }
-
-    fun getAllQuizzes(): List<Quiz> {
-        return quizzes.toList()
-    }
-
-    fun addQuiz(quiz: Quiz) {
-        quizzes.add(quiz)
-    }
-
-}
+interface QuizRepository : JpaRepository<QuizEntity, Long>
