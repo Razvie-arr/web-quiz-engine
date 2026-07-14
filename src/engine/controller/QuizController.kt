@@ -7,7 +7,6 @@ import engine.dto.SolveQuizResponse
 import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
-import engine.util.QuizMessages
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 
@@ -41,9 +40,7 @@ class QuizController(private val quizService: QuizService) {
     @PostMapping("/{id}/solve")
     fun solveQuiz(@PathVariable id: Long, @RequestBody answerRequest: AnswerRequest): SolveQuizResponse {
         val quiz = quizService.getQuizById(id) ?: throw QuizNotFoundException(id)
-        val correct = quizService.checkAnswer(quiz, answerRequest.answer)
-        val feedback = if (correct) QuizMessages.CORRECT_FEEDBACK else QuizMessages.INCORRECT_FEEDBACK
-        return SolveQuizResponse(correct, feedback)
+        return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
     }
 
 }
