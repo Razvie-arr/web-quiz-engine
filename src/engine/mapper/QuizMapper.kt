@@ -12,8 +12,15 @@ fun QuizEntity.toDomain(): Quiz = Quiz(
     answer = this.answer.toList()
 )
 
+fun Quiz.toEntity() = QuizEntity(
+    title = this.title,
+    text = this.text,
+    options = this.options,
+    answer = this.answer
+)
+
 fun Quiz.toResponse() = QuizResponse(
-    id = this.id,
+    id = requireNotNull(this.id),
     title = this.title,
     text = this.text,
     options = this.options
