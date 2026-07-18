@@ -35,7 +35,7 @@ class QuizController(private val quizService: QuizService, private val userServi
         @AuthenticationPrincipal details: UserDetails
     ): QuizResponse {
         val user =
-            userService.findUserByEmail(details.username) ?: throw IllegalStateException("User should be authenticated")
+            userService.findUserByEmail(details.username) ?: throw IllegalStateException("User should exist.")
         val quiz = quizService.createQuiz(
             title = request.title,
             text = request.text,
