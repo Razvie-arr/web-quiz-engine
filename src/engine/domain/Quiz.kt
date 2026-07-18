@@ -5,7 +5,8 @@ data class Quiz(
     val title: String,
     val text: String,
     val options: List<String>,
-    val answer: List<Int>
+    val answer: List<Int>,
+    val authorId: Long
 ) {
 
     fun isAnswerCorrect(inputAnswer: List<Int>) = this.answer.sorted() == inputAnswer.sorted()

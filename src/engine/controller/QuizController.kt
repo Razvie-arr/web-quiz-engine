@@ -8,6 +8,9 @@ import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -27,12 +30,16 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @PostMapping
-    fun createQuiz(@RequestBody @Valid request: QuizCreateRequest): QuizResponse {
+    fun createQuiz(
+        @RequestBody @Valid request: QuizCreateRequest,
+        @AuthenticationPrincipal details: UserDetails
+    ): QuizResponse {
         val quiz = quizService.createQuiz(
             title = request.title,
             text = request.text,
             options = request.options,
-            answer = request.answer
+            answer = request.answer,
+            email = details.username
         )
         return quiz.toResponse()
     }
@@ -43,4 +50,9 @@ class QuizController(private val quizService: QuizService) {
         return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteQuiz(@PathVariable id: Long, @AuthenticationPrincipal details: UserDetails) {
+        quizService.deleteQuizAsUser(id, details.username)
+    }
 }
