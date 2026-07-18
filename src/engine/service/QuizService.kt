@@ -14,8 +14,8 @@ class QuizService(private val quizRepository: QuizRepository) {
     fun getAllQuizzes(): List<Quiz> = quizRepository.findAll()
 
     @Transactional
-    fun createQuiz(title: String, text: String, options: List<String>, answer: List<Int>): Quiz {
-        val quiz = Quiz(title = title, text = text, options = options, answer = answer)
+    fun createQuiz(title: String, text: String, options: List<String>, answer: List<Int>, authorId: Long): Quiz {
+        val quiz = Quiz(title = title, text = text, options = options, answer = answer, authorId = authorId)
         return quizRepository.save(quiz)
     }
 

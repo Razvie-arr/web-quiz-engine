@@ -4,7 +4,7 @@ import jakarta.persistence.*
 
 
 @Entity
-@Table(name = "quiz")
+@Table(name = "quizzes")
 class QuizEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,10 @@ class QuizEntity(
     var options: List<String> = mutableListOf(),
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "quiz_answer", joinColumns = [JoinColumn(name = "quiz_id")])
+    @CollectionTable(name = "quiz_answers", joinColumns = [JoinColumn(name = "quiz_id")])
     var answer: List<Int> = mutableListOf(),
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id", nullable = false)
+    var author: UserEntity? = null
 )

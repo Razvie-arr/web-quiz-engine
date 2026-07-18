@@ -7,12 +7,15 @@ import engine.dto.SolveQuizResponse
 import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
+import engine.service.UserService
 import jakarta.validation.Valid
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/quizzes")
-class QuizController(private val quizService: QuizService) {
+class QuizController(private val quizService: QuizService, private val userService: UserService) {
 
     @GetMapping("/{id}")
     fun getQuiz(@PathVariable id: Long): QuizResponse {
@@ -27,12 +30,18 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @PostMapping
-    fun createQuiz(@RequestBody @Valid request: QuizCreateRequest): QuizResponse {
+    fun createQuiz(
+        @RequestBody @Valid request: QuizCreateRequest,
+        @AuthenticationPrincipal details: UserDetails
+    ): QuizResponse {
+        val user =
+            userService.findUserByEmail(details.username) ?: throw IllegalStateException("User should be authenticated")
         val quiz = quizService.createQuiz(
             title = request.title,
             text = request.text,
             options = request.options,
-            answer = request.answer
+            answer = request.answer,
+            authorId = requireNotNull(user.id)
         )
         return quiz.toResponse()
     }

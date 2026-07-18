@@ -12,5 +12,5 @@ data class QuizCreateRequest(
     @NotNull(message = "Quiz should have options.")
     @Size(min = 2, message = "At least two options are required.")
     val options: List<String>,
-    val answer: List<Int> = emptyList()
+    val answer: List<Int> = emptyList(),
 )
