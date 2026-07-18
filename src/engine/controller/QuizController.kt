@@ -30,7 +30,6 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     fun createQuiz(
         @RequestBody @Valid request: QuizCreateRequest,
         @AuthenticationPrincipal details: UserDetails
