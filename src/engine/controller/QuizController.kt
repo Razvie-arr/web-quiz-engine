@@ -7,15 +7,15 @@ import engine.dto.SolveQuizResponse
 import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
-import engine.service.UserService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/quizzes")
-class QuizController(private val quizService: QuizService, private val userService: UserService) {
+class QuizController(private val quizService: QuizService) {
 
     @GetMapping("/{id}")
     fun getQuiz(@PathVariable id: Long): QuizResponse {
@@ -30,18 +30,17 @@ class QuizController(private val quizService: QuizService, private val userServi
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     fun createQuiz(
         @RequestBody @Valid request: QuizCreateRequest,
         @AuthenticationPrincipal details: UserDetails
     ): QuizResponse {
-        val user =
-            userService.findUserByEmail(details.username) ?: throw IllegalStateException("User should exist.")
         val quiz = quizService.createQuiz(
             title = request.title,
             text = request.text,
             options = request.options,
             answer = request.answer,
-            authorId = requireNotNull(user.id)
+            email = details.username
         )
         return quiz.toResponse()
     }
@@ -52,4 +51,9 @@ class QuizController(private val quizService: QuizService, private val userServi
         return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteQuiz(@PathVariable id: Long, @AuthenticationPrincipal details: UserDetails) {
+        quizService.deleteQuizAsUser(id, details.username)
+    }
 }
