@@ -15,11 +15,11 @@ class QuizEntity(
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "quiz_options", joinColumns = [JoinColumn(name = "quiz_id")])
-    var options: List<String> = mutableListOf(),
+    var options: MutableList<String> = mutableListOf(),
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "quiz_answers", joinColumns = [JoinColumn(name = "quiz_id")])
-    var answer: List<Int> = mutableListOf(),
+    var answer: MutableList<Int> = mutableListOf(),
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)

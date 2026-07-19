@@ -12,6 +12,6 @@ class JpaUserRepository(private val springDataUserRepository: SpringDataUserRepo
     override fun findById(id: Long) = springDataUserRepository.findByIdOrNull(id)?.toDomain()
     override fun findByEmail(email: String) = springDataUserRepository.findByEmail(email)?.toDomain()
     override fun existsByEmail(email: String) = springDataUserRepository.existsByEmail(email)
-    override fun save(user: User) = springDataUserRepository.save(user.toEntity()).toDomain()
+    override fun create(user: User) = springDataUserRepository.save(user.toEntity()).toDomain()
 
 }

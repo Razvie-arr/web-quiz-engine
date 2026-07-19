@@ -1,9 +1,6 @@
 package engine.controller
 
-import engine.dto.AnswerRequest
-import engine.dto.QuizCreateRequest
-import engine.dto.QuizResponse
-import engine.dto.SolveQuizResponse
+import engine.dto.*
 import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
@@ -48,6 +45,16 @@ class QuizController(private val quizService: QuizService) {
     fun solveQuiz(@PathVariable id: Long, @RequestBody answerRequest: AnswerRequest): SolveQuizResponse {
         val quiz = quizService.getQuizById(id) ?: throw QuizNotFoundException(id)
         return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateQuiz(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal details: UserDetails,
+        @RequestBody @Valid request: QuizUpdateRequest
+    ) {
+        quizService.updateQuiz(id, request.title, request.text, request.options, request.answer, details.username)
     }
 
     @DeleteMapping("/{id}")
