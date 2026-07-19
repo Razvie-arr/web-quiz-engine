@@ -57,6 +57,23 @@ class QuizController(private val quizService: QuizService) {
         quizService.updateQuiz(id, request.title, request.text, request.options, request.answer, details.username)
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun patchQuiz(
+        @PathVariable id: Long,
+        @AuthenticationPrincipal details: UserDetails,
+        @RequestBody request: QuizPatchRequest
+    ) {
+        quizService.patchQuiz(
+            quizId = id,
+            title = request.title,
+            text = request.text,
+            options = request.options,
+            answer = request.answer,
+            email = details.username
+        )
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteQuiz(@PathVariable id: Long, @AuthenticationPrincipal details: UserDetails) {

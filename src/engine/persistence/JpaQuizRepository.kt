@@ -27,16 +27,25 @@ class JpaQuizRepository(
         val quizEntity =
             springDataQuizRepository.findByIdOrNull(requireNotNull(quiz.id))
                 ?: throw IllegalStateException("Quiz should exist.")
-
-        quizEntity.title = quiz.title
-        quizEntity.text = quiz.text
-
-        quizEntity.options.clear()
-        quizEntity.options.addAll(quiz.options)
-
-        quizEntity.answer.clear()
-        quizEntity.answer.addAll(quiz.answer)
         
+        if (quizEntity.title != quiz.title) {
+            quizEntity.title = quiz.title
+        }
+
+        if (quizEntity.text != quiz.text) {
+            quizEntity.text = quiz.text
+        }
+
+        if (quizEntity.options.sorted() != quiz.options.sorted()) {
+            quizEntity.options.clear()
+            quizEntity.options.addAll(quiz.options)
+        }
+
+        if (quizEntity.answer.sorted() != quiz.answer.sorted()) {
+            quizEntity.answer.clear()
+            quizEntity.answer.addAll(quiz.answer)
+        }
+
         return springDataQuizRepository.save(quizEntity).toDomain()
     }
 

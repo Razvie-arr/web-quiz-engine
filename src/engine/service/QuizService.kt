@@ -40,6 +40,26 @@ class QuizService(private val quizRepository: QuizRepository, private val userSe
     }
 
     @Transactional
+    fun patchQuiz(
+        quizId: Long,
+        title: String?,
+        text: String?,
+        options: List<String>?,
+        answer: List<Int>?,
+        email: String
+    ): Quiz {
+        val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
+        verifyOwnership(quiz, email)
+        val patchedQuiz = quiz.copy(
+            title = title ?: quiz.title,
+            text = text ?: quiz.text,
+            options = options ?: quiz.options,
+            answer = answer ?: quiz.answer
+        )
+        return quizRepository.update(patchedQuiz)
+    }
+
+    @Transactional
     fun deleteQuizAsUser(quizId: Long, email: String) {
         val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
         verifyOwnership(quiz, email)
