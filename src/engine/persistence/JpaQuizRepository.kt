@@ -3,6 +3,8 @@ package engine.persistence
 import engine.domain.Quiz
 import engine.mapper.toDomain
 import engine.mapper.toEntity
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
@@ -13,8 +15,9 @@ class JpaQuizRepository(
 ) : QuizRepository {
 
     override fun findById(id: Long) = springDataQuizRepository.findByIdOrNull(id)?.toDomain()
-    override fun findByAuthorId(authorId: Long) = springDataQuizRepository.findByAuthorId(authorId)?.toDomain()
-    override fun findAll() = springDataQuizRepository.findAll().map { it.toDomain() }
+    override fun findAll(pageable: Pageable): Page<Quiz> =
+        springDataQuizRepository.findAll(pageable).map { it.toDomain() }
+
     override fun deleteById(id: Long) = springDataQuizRepository.deleteById(id)
     override fun create(quiz: Quiz): Quiz {
         val quizEntity = quiz.toEntity()
@@ -27,7 +30,7 @@ class JpaQuizRepository(
         val quizEntity =
             springDataQuizRepository.findByIdOrNull(requireNotNull(quiz.id))
                 ?: throw IllegalStateException("Quiz should exist.")
-        
+
         if (quizEntity.title != quiz.title) {
             quizEntity.title = quiz.title
         }

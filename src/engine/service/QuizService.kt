@@ -4,6 +4,7 @@ import engine.domain.Quiz
 import engine.exception.QuizNotFoundException
 import engine.exception.QuizOwnershipException
 import engine.persistence.QuizRepository
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,7 +14,7 @@ class QuizService(private val quizRepository: QuizRepository, private val userSe
     fun getQuizById(id: Long): Quiz? = quizRepository.findById(id)
 
 
-    fun getAllQuizzes(): List<Quiz> = quizRepository.findAll()
+    fun getAllQuizzes(pageable: Pageable) = quizRepository.findAll(pageable)
 
     @Transactional
     fun createQuiz(title: String, text: String, options: List<String>, answer: List<Int>, email: String): Quiz {

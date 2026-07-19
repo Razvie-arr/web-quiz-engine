@@ -1,10 +1,8 @@
 package engine.persistence
 
 import engine.entity.QuizEntity
-import org.springframework.data.repository.ListCrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface SpringDataQuizRepository : ListCrudRepository<QuizEntity, Long> {
-
-    fun findByAuthorId(authorId: Long): QuizEntity?
+interface SpringDataQuizRepository : JpaRepository<QuizEntity, Long> {
 
 }
