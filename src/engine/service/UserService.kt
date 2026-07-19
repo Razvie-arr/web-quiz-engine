@@ -17,10 +17,10 @@ class UserService(private val userRepository: UserRepository, private val passwo
         if (userRepository.existsByEmail(email)) {
             throw UserAlreadyExistsException(email)
         }
-        
+
         val encodedPassword = passwordEncoder.encode(rawPassword)
         val user = User(email = email, password = encodedPassword)
-        return userRepository.save(user)
+        return userRepository.create(user)
     }
 
 }

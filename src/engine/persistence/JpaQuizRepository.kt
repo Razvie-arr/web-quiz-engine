@@ -7,12 +7,46 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
 @Repository
-class JpaQuizRepository(private val springDataQuizRepository: SpringDataQuizRepository) : QuizRepository {
+class JpaQuizRepository(
+    private val springDataQuizRepository: SpringDataQuizRepository,
+    private val springDataUserRepository: SpringDataUserRepository
+) : QuizRepository {
 
     override fun findById(id: Long) = springDataQuizRepository.findByIdOrNull(id)?.toDomain()
     override fun findByAuthorId(authorId: Long) = springDataQuizRepository.findByAuthorId(authorId)?.toDomain()
     override fun findAll() = springDataQuizRepository.findAll().map { it.toDomain() }
     override fun deleteById(id: Long) = springDataQuizRepository.deleteById(id)
-    override fun save(quiz: Quiz): Quiz = springDataQuizRepository.save(quiz.toEntity()).toDomain()
+    override fun create(quiz: Quiz): Quiz {
+        val quizEntity = quiz.toEntity()
+        quizEntity.author =
+            springDataUserRepository.findByIdOrNull(quiz.authorId) ?: throw IllegalStateException("User should exist.")
+        return springDataQuizRepository.save(quizEntity).toDomain()
+    }
+
+    override fun update(quiz: Quiz): Quiz {
+        val quizEntity =
+            springDataQuizRepository.findByIdOrNull(requireNotNull(quiz.id))
+                ?: throw IllegalStateException("Quiz should exist.")
+        
+        if (quizEntity.title != quiz.title) {
+            quizEntity.title = quiz.title
+        }
+
+        if (quizEntity.text != quiz.text) {
+            quizEntity.text = quiz.text
+        }
+
+        if (quizEntity.options.sorted() != quiz.options.sorted()) {
+            quizEntity.options.clear()
+            quizEntity.options.addAll(quiz.options)
+        }
+
+        if (quizEntity.answer.sorted() != quiz.answer.sorted()) {
+            quizEntity.answer.clear()
+            quizEntity.answer.addAll(quiz.answer)
+        }
+
+        return springDataQuizRepository.save(quizEntity).toDomain()
+    }
 
 }

@@ -3,7 +3,6 @@ package engine.mapper
 import engine.domain.Quiz
 import engine.dto.QuizResponse
 import engine.entity.QuizEntity
-import engine.entity.UserEntity
 
 fun QuizEntity.toDomain(): Quiz = Quiz(
     id = requireNotNull(this.id) { "Quiz must have an id" },
@@ -17,9 +16,8 @@ fun QuizEntity.toDomain(): Quiz = Quiz(
 fun Quiz.toEntity() = QuizEntity(
     title = this.title,
     text = this.text,
-    options = this.options,
-    answer = this.answer,
-    author = UserEntity(id = this.authorId)
+    options = this.options.toMutableList(),
+    answer = this.answer.toMutableList(),
 )
 
 fun Quiz.toResponse() = QuizResponse(

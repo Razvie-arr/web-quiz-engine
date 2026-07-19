@@ -8,6 +8,7 @@ interface QuizRepository {
     fun findByAuthorId(authorId: Long): Quiz?
     fun findAll(): List<Quiz>
     fun deleteById(id: Long)
-    fun save(quiz: Quiz): Quiz
+    fun create(quiz: Quiz): Quiz
+    fun update(quiz: Quiz): Quiz
 
 }

@@ -20,17 +20,58 @@ class QuizService(private val quizRepository: QuizRepository, private val userSe
         val user = userService.findUserByEmail(email) ?: throw IllegalStateException("User should exist.")
         val quiz =
             Quiz(title = title, text = text, options = options, answer = answer, authorId = requireNotNull(user.id))
-        return quizRepository.save(quiz)
+        return quizRepository.create(quiz)
+    }
+
+    @Transactional
+    fun updateQuiz(
+        quizId: Long,
+        title: String,
+        text: String,
+        options: List<String>,
+        answer: List<Int>,
+        email: String,
+    ): Quiz {
+        val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
+        verifyOwnership(quiz, email)
+        val updatedQuiz =
+            Quiz(id = quizId, title = title, text = text, options = options, answer = answer, authorId = quiz.authorId)
+        return quizRepository.update(updatedQuiz)
+    }
+
+    @Transactional
+    fun patchQuiz(
+        quizId: Long,
+        title: String?,
+        text: String?,
+        options: List<String>?,
+        answer: List<Int>?,
+        email: String
+    ): Quiz {
+        val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
+        verifyOwnership(quiz, email)
+        val patchedQuiz = quiz.copy(
+            title = title ?: quiz.title,
+            text = text ?: quiz.text,
+            options = options ?: quiz.options,
+            answer = answer ?: quiz.answer
+        )
+        return quizRepository.update(patchedQuiz)
     }
 
     @Transactional
     fun deleteQuizAsUser(quizId: Long, email: String) {
         val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
-        val user = userService.findUserByEmail(email) ?: throw IllegalStateException("User should exist.")
-        if (quiz.authorId != user.id) {
-            throw QuizOwnershipException(quizId, email)
-        }
+        verifyOwnership(quiz, email)
         quizRepository.deleteById(quizId)
     }
+
+    private fun verifyOwnership(quiz: Quiz, email: String) {
+        val user = userService.findUserByEmail(email) ?: throw IllegalStateException("User should exist.")
+        if (quiz.authorId != user.id) {
+            throw QuizOwnershipException(requireNotNull(quiz.id), email)
+        }
+    }
+
 
 }
