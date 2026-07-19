@@ -8,7 +8,7 @@ import jakarta.persistence.*
 class QuizEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
     var title: String = "",
     var text: String = "",
