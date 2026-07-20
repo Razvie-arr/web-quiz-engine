@@ -67,6 +67,17 @@ class QuizService(private val quizRepository: QuizRepository, private val userSe
         quizRepository.deleteById(quizId)
     }
 
+    @Transactional
+    fun solveQuiz(quizId: Long, answer: List<Int>): Boolean {
+        val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
+        val isCorrect = quiz.isAnswerCorrect(answer)
+        if (!isCorrect) {
+            return false
+        }
+        // TODO: save completed quiz
+        return true
+    }
+
     private fun verifyOwnership(quiz: Quiz, email: String) {
         val user = userService.findUserByEmail(email) ?: throw IllegalStateException("User should exist.")
         if (quiz.authorId != user.id) {

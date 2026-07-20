@@ -48,8 +48,8 @@ class QuizController(private val quizService: QuizService) {
 
     @PostMapping("/{id}/solve")
     fun solveQuiz(@PathVariable id: Long, @RequestBody answerRequest: AnswerRequest): SolveQuizResponse {
-        val quiz = quizService.getQuizById(id) ?: throw QuizNotFoundException(id)
-        return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
+        val solved = quizService.solveQuiz(id, answerRequest.answer)
+        return SolveQuizResponse(solved)
     }
 
     @PutMapping("/{id}")
@@ -84,4 +84,5 @@ class QuizController(private val quizService: QuizService) {
     fun deleteQuiz(@PathVariable id: Long, @AuthenticationPrincipal details: UserDetails) {
         quizService.deleteQuizAsUser(id, details.username)
     }
+
 }

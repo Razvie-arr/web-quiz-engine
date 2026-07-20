@@ -1,17 +1,11 @@
 package engine.persistence
 
-import engine.domain.User
-import engine.mapper.toDomain
-import engine.mapper.toEntity
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Repository
+import engine.entity.UserEntity
+import org.springframework.data.repository.ListCrudRepository
 
-@Repository
-class JpaUserRepository(private val springDataUserRepository: SpringDataUserRepository) : UserRepository {
+interface JpaUserRepository : ListCrudRepository<UserEntity, Long> {
 
-    override fun findById(id: Long) = springDataUserRepository.findByIdOrNull(id)?.toDomain()
-    override fun findByEmail(email: String) = springDataUserRepository.findByEmail(email)?.toDomain()
-    override fun existsByEmail(email: String) = springDataUserRepository.existsByEmail(email)
-    override fun create(user: User) = springDataUserRepository.save(user.toEntity()).toDomain()
+    fun findByEmail(email: String): UserEntity?
+    fun existsByEmail(email: String): Boolean
 
 }
