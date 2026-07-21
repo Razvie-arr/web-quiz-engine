@@ -47,8 +47,12 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @PostMapping("/{id}/solve")
-    fun solveQuiz(@PathVariable id: Long, @RequestBody answerRequest: AnswerRequest): SolveQuizResponse {
-        val solved = quizService.solveQuiz(id, answerRequest.answer)
+    fun solveQuiz(
+        @PathVariable id: Long,
+        @RequestBody answerRequest: AnswerRequest,
+        @AuthenticationPrincipal details: UserDetails,
+    ): SolveQuizResponse {
+        val solved = quizService.solveQuizAsUser(id, answerRequest.answer, details.username)
         return SolveQuizResponse(solved)
     }
 
@@ -66,8 +70,8 @@ class QuizController(private val quizService: QuizService) {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun patchQuiz(
         @PathVariable id: Long,
+        @RequestBody request: QuizPatchRequest,
         @AuthenticationPrincipal details: UserDetails,
-        @RequestBody request: QuizPatchRequest
     ) {
         quizService.patchQuiz(
             quizId = id,

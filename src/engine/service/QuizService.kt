@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class QuizService(private val quizRepository: QuizRepository, private val userService: UserService) {
+class QuizService(
+    private val quizRepository: QuizRepository,
+    private val userService: UserService,
+    private val completedQuizService: CompletedQuizService
+) {
 
     fun getQuizById(id: Long): Quiz? = quizRepository.findById(id)
 
@@ -68,13 +72,14 @@ class QuizService(private val quizRepository: QuizRepository, private val userSe
     }
 
     @Transactional
-    fun solveQuiz(quizId: Long, answer: List<Int>): Boolean {
+    fun solveQuizAsUser(quizId: Long, answer: List<Int>, email: String): Boolean {
         val quiz = getQuizById(quizId) ?: throw QuizNotFoundException(quizId)
         val isCorrect = quiz.isAnswerCorrect(answer)
         if (!isCorrect) {
             return false
         }
-        // TODO: save completed quiz
+        val userId = userService.findUserByEmail(email)?.id ?: throw IllegalStateException("User should exist.")
+        completedQuizService.createCompletedQuiz(quizId, userId)
         return true
     }
 

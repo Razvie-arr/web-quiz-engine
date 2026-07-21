@@ -8,4 +8,6 @@ interface CompletedQuizRepository {
 
     fun findAllByUserId(userId: Long, pageable: Pageable): Page<CompletedQuiz>
 
+    fun create(completedQuiz: CompletedQuiz): CompletedQuiz
+
 }

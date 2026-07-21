@@ -3,6 +3,10 @@ package engine.mapper
 import engine.domain.CompletedQuiz
 import engine.dto.CompletedQuizResponse
 import engine.entity.CompletedQuizEntity
+import engine.entity.QuizEntity
+import engine.entity.UserEntity
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 fun CompletedQuizEntity.toDomain() = CompletedQuiz(
     id = id,
@@ -13,5 +17,17 @@ fun CompletedQuizEntity.toDomain() = CompletedQuiz(
 
 fun CompletedQuiz.toResponse() = CompletedQuizResponse(
     id = requireNotNull(id) { "CompletedQuiz must have an id" },
+    completedAt = LocalDateTime.ofInstant(
+        java.time.Instant.ofEpochSecond(
+            this.completedAt.epochSeconds,
+            this.completedAt.nanosecondsOfSecond.toLong()
+        ),
+        ZoneOffset.UTC
+    ).toString()
+)
+
+fun CompletedQuiz.toEntity() = CompletedQuizEntity(
+    user = UserEntity(id = userId),
+    quiz = QuizEntity(id = quizId),
     completedAt = completedAt
 )
