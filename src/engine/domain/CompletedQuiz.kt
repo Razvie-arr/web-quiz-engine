@@ -1,5 +1,5 @@
 package engine.domain
 
-import kotlin.time.Instant
+import java.time.LocalDateTime
 
-data class CompletedQuiz(val id: Long? = null, val userId: Long, val quizId: Long, val completedAt: Instant)
+data class CompletedQuiz(val id: Long? = null, val userId: Long, val quizId: Long, val completedAt: LocalDateTime)

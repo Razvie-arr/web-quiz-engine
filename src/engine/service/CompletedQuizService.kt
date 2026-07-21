@@ -5,7 +5,7 @@ import engine.persistence.CompletedQuizRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import kotlin.time.Clock
+import java.time.LocalDateTime
 
 @Service
 class CompletedQuizService(
@@ -19,7 +19,7 @@ class CompletedQuizService(
     }
 
     fun createCompletedQuiz(quizId: Long, userId: Long): CompletedQuiz {
-        val newCompletedQuiz = CompletedQuiz(quizId = quizId, userId = userId, completedAt = Clock.System.now())
+        val newCompletedQuiz = CompletedQuiz(quizId = quizId, userId = userId, completedAt = LocalDateTime.now())
         return completedQuizRepository.create(newCompletedQuiz)
     }
 
