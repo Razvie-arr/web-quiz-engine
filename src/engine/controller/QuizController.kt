@@ -5,6 +5,9 @@ import engine.exception.QuizNotFoundException
 import engine.mapper.toResponse
 import engine.service.QuizService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
@@ -21,9 +24,11 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @GetMapping
-    fun getQuizzes(): List<QuizResponse> {
-        val quizzes = quizService.getAllQuizzes()
-        return quizzes.map { it.toResponse() }
+    fun getQuizzes(
+        @PageableDefault(page = 0, size = 10) pageable: Pageable
+    ): Page<QuizResponse> {
+        val pagedQuizzes = quizService.getAllQuizzes(pageable)
+        return pagedQuizzes.map { it.toResponse() }
     }
 
     @PostMapping
@@ -42,9 +47,13 @@ class QuizController(private val quizService: QuizService) {
     }
 
     @PostMapping("/{id}/solve")
-    fun solveQuiz(@PathVariable id: Long, @RequestBody answerRequest: AnswerRequest): SolveQuizResponse {
-        val quiz = quizService.getQuizById(id) ?: throw QuizNotFoundException(id)
-        return SolveQuizResponse(quiz.isAnswerCorrect(answerRequest.answer))
+    fun solveQuiz(
+        @PathVariable id: Long,
+        @RequestBody answerRequest: AnswerRequest,
+        @AuthenticationPrincipal details: UserDetails,
+    ): SolveQuizResponse {
+        val solved = quizService.solveQuizAsUser(id, answerRequest.answer, details.username)
+        return SolveQuizResponse(solved)
     }
 
     @PutMapping("/{id}")
@@ -61,8 +70,8 @@ class QuizController(private val quizService: QuizService) {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun patchQuiz(
         @PathVariable id: Long,
+        @RequestBody request: QuizPatchRequest,
         @AuthenticationPrincipal details: UserDetails,
-        @RequestBody request: QuizPatchRequest
     ) {
         quizService.patchQuiz(
             quizId = id,
@@ -79,4 +88,5 @@ class QuizController(private val quizService: QuizService) {
     fun deleteQuiz(@PathVariable id: Long, @AuthenticationPrincipal details: UserDetails) {
         quizService.deleteQuizAsUser(id, details.username)
     }
+
 }
